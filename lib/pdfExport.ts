@@ -8,7 +8,6 @@ export function exportToPDF(plan: FitnessPlan, profile: UserProfile) {
   const margin = 20;
   const maxWidth = pageWidth - 2 * margin;
 
-  // Helper function to add text with word wrap
   const addText = (text: string, fontSize: number, isBold: boolean = false, color: string = '#000000') => {
     doc.setFontSize(fontSize);
     doc.setTextColor(color);
@@ -29,11 +28,9 @@ export function exportToPDF(plan: FitnessPlan, profile: UserProfile) {
     yPos += lines.length * (fontSize * 0.4) + 5;
   };
 
-  // Title
   addText('AI Fitness Coach - Personalized Plan', 20, true, '#2563eb');
   yPos += 5;
 
-  // User Profile
   addText('User Profile', 16, true);
   addText(`Name: ${profile.name}`, 12);
   addText(`Age: ${profile.age} | Gender: ${profile.gender}`, 12);
@@ -42,21 +39,18 @@ export function exportToPDF(plan: FitnessPlan, profile: UserProfile) {
   addText(`Location: ${profile.location} | Diet: ${profile.diet}`, 12);
   yPos += 10;
 
-  // Motivation
   addText('Daily Motivation', 16, true, '#7c3aed');
   plan.motivation.forEach(quote => {
     addText(quote, 11);
   });
   yPos += 10;
 
-  // Tips
   addText('Personalized Tips', 16, true);
   plan.tips.forEach(tip => {
     addText(`• ${tip}`, 11);
   });
   yPos += 10;
 
-  // Workout Plan
   addText('Workout Plan', 16, true, '#2563eb');
   plan.workoutPlan.forEach(day => {
     if (yPos > doc.internal.pageSize.getHeight() - 40) {
@@ -73,7 +67,6 @@ export function exportToPDF(plan: FitnessPlan, profile: UserProfile) {
   });
   yPos += 10;
 
-  // Diet Plan
   addText('Diet Plan', 16, true, '#2563eb');
   plan.dietPlan.forEach(day => {
     if (yPos > doc.internal.pageSize.getHeight() - 40) {
@@ -88,7 +81,6 @@ export function exportToPDF(plan: FitnessPlan, profile: UserProfile) {
     yPos += 5;
   });
 
-  // Save PDF
   doc.save(`fitness-plan-${profile.name}-${new Date().toISOString().split('T')[0]}.pdf`);
 }
 

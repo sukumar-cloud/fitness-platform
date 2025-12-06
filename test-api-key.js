@@ -1,9 +1,7 @@
-// Quick test script to verify Google API key works
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const fs = require('fs');
 const path = require('path');
 
-// Read .env file manually
 let API_KEY = '';
 try {
   const envContent = fs.readFileSync(path.join(__dirname, '.env'), 'utf8');

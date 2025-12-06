@@ -25,7 +25,6 @@ export default function PlanDisplay() {
   if (!plan) return null;
 
   const handleEditDetails = () => {
-    // Keep existing profile to prefill the form, just clear the plan so the form shows again
     setPlan(null);
   };
 
@@ -91,13 +90,11 @@ export default function PlanDisplay() {
   };
 
   const handleVoiceClick = async (section: 'workout' | 'diet') => {
-    // If something is playing, stop it and return (acts as Stop button)
     if (playingAudio) {
       stopVoicePlayback();
       return;
     }
 
-    // Stop any lingering audio before starting a new one
     stopVoicePlayback();
 
     setPlayingAudio(section);
@@ -116,13 +113,11 @@ export default function PlanDisplay() {
       const result = await generateVoice(text, section);
       
       if (result.useBrowserTTS) {
-        // Use browser TTS
         const utterance = new SpeechSynthesisUtterance(result.text);
         utteranceRef.current = utterance;
         utterance.onend = () => stopVoicePlayback();
         speechSynthesis.speak(utterance);
       } else if (result.audioUrl) {
-        // Play audio from URL
         const audio = new Audio(result.audioUrl);
         audioRef.current = audio;
         audio.onended = () => stopVoicePlayback();
@@ -190,12 +185,10 @@ export default function PlanDisplay() {
     if (supabaseEnabled) {
       fetchSavedPlans();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [supabaseEnabled]);
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
-      {/* Header Actions */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -244,7 +237,6 @@ export default function PlanDisplay() {
         </motion.button>
       </motion.div>
 
-      {/* Saved Plans (Supabase) */}
       {supabaseEnabled && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -310,7 +302,6 @@ export default function PlanDisplay() {
         </motion.div>
       )}
 
-      {/* Motivation Quotes */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -324,7 +315,6 @@ export default function PlanDisplay() {
         </div>
       </motion.div>
 
-      {/* Tips */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -343,7 +333,6 @@ export default function PlanDisplay() {
         </ul>
       </motion.div>
 
-      {/* Workout Plan */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -411,7 +400,6 @@ export default function PlanDisplay() {
         </div>
       </motion.div>
 
-      {/* Diet Plan */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -495,7 +483,6 @@ export default function PlanDisplay() {
         </div>
       </motion.div>
 
-      {/* Image Modal */}
       {selectedImage && (
         <motion.div
           initial={{ opacity: 0 }}

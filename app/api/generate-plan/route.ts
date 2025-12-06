@@ -231,7 +231,6 @@ export async function POST(request: NextRequest) {
 
     let content = '';
 
-    // Prefer OpenAI if key present; otherwise try Gemini
     if (OPENAI_API_KEY) {
       console.log('🤖 Using OpenAI for plan generation');
       try {
@@ -255,7 +254,6 @@ export async function POST(request: NextRequest) {
 
     const plan = tryParsePlan(content);
 
-    // Validate structure
     if (!plan.workoutPlan || !plan.dietPlan || !plan.tips || !plan.motivation) {
       throw new Error('Invalid plan structure');
     }

@@ -28,12 +28,10 @@ export async function POST(request: NextRequest) {
 
     const enhancedPrompt = `Professional high-quality image of: ${prompt}. Realistic, clear, well-lit, suitable for fitness or nutrition content.`;
 
-    // Try Replicate API first (free tier available)
     const replicateApiKey = process.env.REPLICATE_API_TOKEN;
     
     if (replicateApiKey) {
       try {
-        // Using Stable Diffusion via Replicate
         const response = await fetch('https://api.replicate.com/v1/predictions', {
           method: 'POST',
           headers: {
@@ -54,7 +52,6 @@ export async function POST(request: NextRequest) {
         if (response.ok) {
           const data = await response.json();
           
-          // Poll for result (Replicate is async)
           let result = data;
           let attempts = 0;
           while (result.status !== 'succeeded' && attempts < 30) {
@@ -75,11 +72,9 @@ export async function POST(request: NextRequest) {
         }
       } catch (replicateError) {
         console.error('Replicate API error:', replicateError);
-        // Fall through to alternative methods
       }
     }
 
-    // Alternative: Try Stability AI if available
     const stabilityApiKey = process.env.STABILITY_API_KEY;
     if (stabilityApiKey) {
       try {
@@ -99,7 +94,6 @@ export async function POST(request: NextRequest) {
         if (response.ok) {
           const data = await response.json();
           if (data.image) {
-            // Stability AI returns base64
             return NextResponse.json({ imageUrl: `data:image/png;base64,${data.image}` });
           }
         }
@@ -108,7 +102,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Next: Try Pollinations (no key, on-the-fly generation)
     try {
       const pollUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(enhancedPrompt)}?width=800&height=800&seed=${Date.now()}`;
       const dataUrl = await toDataUrl(pollUrl);
@@ -117,7 +110,6 @@ export async function POST(request: NextRequest) {
       console.error('Pollinations error:', pollError);
     }
 
-    // Fallback: Use Unsplash (with key if provided, otherwise public featured endpoint)
     try {
       const searchQuery = prompt.toLowerCase().replace(/fitness exercise:|food meal:/g, '').trim() || 'fitness';
       const unsplashAccessKey = process.env.UNSPLASH_ACCESS_KEY;
@@ -131,7 +123,6 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ imageUrl: dataUrl });
         }
       } else {
-        // No key: use public featured endpoint (no auth) with cache-busting
         const bust = Date.now();
         const directUrl = `https://source.unsplash.com/featured/800x800/?${encodeURIComponent(searchQuery)}&sig=${bust}`;
         const dataUrl = await toDataUrl(directUrl);
@@ -141,7 +132,6 @@ export async function POST(request: NextRequest) {
       console.error('Unsplash API error:', unsplashError);
     }
 
-    // Final fallback: stable hosted photo (no auth) + inline illustration backup
     const stablePhoto = 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80';
     const dataUrl = await toDataUrl(stablePhoto);
     return NextResponse.json({ imageUrl: dataUrl });

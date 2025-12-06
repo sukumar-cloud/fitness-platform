@@ -11,11 +11,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Text is required' }, { status: 400 });
     }
 
-    // Check if ElevenLabs API key is available
     const elevenLabsKey = process.env.ELEVENLABS_API_KEY;
     
     if (!elevenLabsKey) {
-      // Fallback: Use Web Speech API (browser-based)
       return NextResponse.json({
         audioUrl: null,
         useBrowserTTS: true,
@@ -23,8 +21,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Use ElevenLabs API
-    const voiceId = '21m00Tcm4TlvDq8ikWAM'; // Default voice
+    const voiceId = '21m00Tcm4TlvDq8ikWAM';
     
     const response = await fetch(
       `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
@@ -50,7 +47,6 @@ export async function POST(request: NextRequest) {
       throw new Error('ElevenLabs API error');
     }
 
-    // Convert to base64 so the client can play directly
     const arrayBuffer = await response.arrayBuffer();
     const base64 = Buffer.from(arrayBuffer).toString('base64');
     const audioUrl = `data:audio/mpeg;base64,${base64}`;
@@ -58,7 +54,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ audioUrl, useBrowserTTS: false, text });
   } catch (error: any) {
     console.error('Error generating voice:', error);
-    // Fallback to browser TTS
     return NextResponse.json({
       audioUrl: null,
       useBrowserTTS: true,
